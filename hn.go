@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -19,7 +20,6 @@ func NewClient() *Client {
 }
 
 func (c *Client) GetResource(url string) ([]byte, error) {
-	fmt.Printf("requesting: %s\n", url)
 	response, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -29,24 +29,46 @@ func (c *Client) GetResource(url string) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		return contents, nil
+		var jsonMap map[string]interface{}
+		err = json.Unmarshal(contents, &jsonMap)
+		return contents, err
 	}
 }
 
-func (c *Client) GetItem(id int) {
+func (c *Client) GetItem(id int) (Item, error) {
 	url := fmt.Sprintf(c.ItemUrl, id)
-	rep, _ := c.GetResource(url)
-	fmt.Printf("%s\n", rep)
+	rep, err := c.GetResource(url)
+	var i Item
+	if err != nil {
+		return i, err
+	}
+	err = json.Unmarshal(rep, &i)
+
+	return i, err
 }
 
-func (c *Client) GetUser(username string) {
+func (c *Client) GetUser(username string) (User, error) {
 	url := fmt.Sprintf(c.UserUrl, username)
-	rep, _ := c.GetResource(url)
-	fmt.Printf("%s\n", rep)
+	rep, err := c.GetResource(url)
+	var user User
+	if err != nil {
+		return user, err
+	}
+
+	err = json.Unmarshal(rep, &user)
+
+	return user, err
 }
 
 func main() {
 	c := NewClient()
-	c.GetItem(8863)
-	c.GetUser("munrocape")
+
+	story, _ := c.GetItem(8715529)
+	fmt.Printf("%+v\n", story)
+
+	user, _ := c.GetUser("munrocape")
+	fmt.Printf("%+v\n", user)
+
+	comment, _ := c.GetItem(8715677)
+	fmt.Printf("%+v\n", comment)
 }
