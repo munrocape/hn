@@ -8,14 +8,26 @@ import (
 )
 
 type Client struct {
-	UserUrl string
-	ItemUrl string
+	BaseUrl string
+	UserSuffix string
+	ItemSuffix string
+	MaxSuffix string
+	TopSuffix string
+	JobSuffix string
+	AskSuffix string
+	UpdateSuffix string
 }
 
 func NewClient() *Client {
 	var c Client
-	c.UserUrl = "https://hacker-news.firebaseio.com/v0/user/%s.json"
-	c.ItemUrl = "https://hacker-news.firebaseio.com/v0/item/%d.json"
+	c.BaseUrl = "https://hacker-news.firebaseio.com/v0/"
+	c.UserSuffix = "user/%s.json"
+	c.ItemSuffix = "item/%d.json"
+	c.MaxSuffix = "maxitem.json"
+	c.TopSuffix = "topstories.json"
+	c.JobSuffix = "jobstories.json"
+	c.AskSuffix = "askstories.json"
+	c.UpdateSuffix = "updates.json"
 	return &c
 }
 
@@ -36,7 +48,7 @@ func (c *Client) GetResource(url string) ([]byte, error) {
 }
 
 func (c *Client) GetItem(id int) (Item, error) {
-	url := fmt.Sprintf(c.ItemUrl, id)
+	url := c.BaseUrl + fmt.Sprintf(c.ItemSuffix, id)
 	rep, err := c.GetResource(url)
 
 	var i Item
@@ -49,7 +61,7 @@ func (c *Client) GetItem(id int) (Item, error) {
 }
 
 func (c *Client) GetUser(username string) (User, error) {
-	url := fmt.Sprintf(c.UserUrl, username)
+	url := c.BaseUrl + fmt.Sprintf(c.UserSuffix, username)
 	rep, err := c.GetResource(url)
 
 	var user User
@@ -61,15 +73,36 @@ func (c *Client) GetUser(username string) (User, error) {
 	return user, err
 }
 
+func (c *Client) GetTop(number int) ([]int, error) {
+	var top500 []int
+	if number > 500 {
+		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
+	}
+	url := c.BaseUrl + c.TopSuffix
+	rep, err := c.GetResource(url)
+	
+
+	err = json.Unmarshal(rep, &top500)
+	
+	if err != nil {
+		return nil, err
+	}
+
+	return top500[:number], nil
+}
+
 func main() {
 	c := NewClient()
 
 	story, _ := c.GetItem(8715529)
-	fmt.Printf("%+v\n", story)
+	fmt.Printf("%+v\n\n", story)
 
 	user, _ := c.GetUser("munrocape")
-	fmt.Printf("%+v\n", user)
+	fmt.Printf("%+v\n\n", user)
 
 	comment, _ := c.GetItem(8715677)
-	fmt.Printf("%+v\n", comment)
+	fmt.Printf("%+v\n\n", comment)
+
+	top10, _ := c.GetTop(10)
+	fmt.Printf("%+v\n\n", top10)
 }
