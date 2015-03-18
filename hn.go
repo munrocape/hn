@@ -25,6 +25,7 @@ func NewClient() *Client {
 	c.ItemSuffix = "item/%d.json"
 	c.MaxSuffix = "maxitem.json"
 	c.TopSuffix = "topstories.json"
+	c.NewSuffix = "newstories.json"
 	c.JobSuffix = "jobstories.json"
 	c.AskSuffix = "askstories.json"
 	c.UpdateSuffix = "updates.json"
@@ -73,14 +74,34 @@ func (c *Client) GetUser(username string) (User, error) {
 	return user, err
 }
 
-func (c *Client) GetTop(number int) ([]int, error) {
+// GetTopStories takes an int number and returns an array of up to number ints that represent the top stories.
+func (c *Client) GetTopStories(number int) ([]int, error) {
 	var top500 []int
 	if number > 500 {
 		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
 	}
+	
 	url := c.BaseUrl + c.TopSuffix
 	rep, err := c.GetResource(url)
 	
+	err = json.Unmarshal(rep, &top500)
+	
+	if err != nil {
+		return nil, err
+	}
+
+	return top500[:number], nil
+}
+
+// GetNewStories takes an int number and returns an array of up to number ints that represent the newest stories.
+func (c *Client) GetNewStories(number int) ([]int, error) {
+	var top500 []int
+	if number > 500 {
+		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
+	}
+	
+	url := c.BaseUrl + c.NewSuffix
+	rep, err := c.GetResource(url)
 
 	err = json.Unmarshal(rep, &top500)
 	
