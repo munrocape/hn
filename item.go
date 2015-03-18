@@ -1,7 +1,7 @@
 package main
 
 type Item struct {
-	Id          int `json:"id"`
+	Id          int    `json:"id"`
 	Deleted     bool   `json:"deleted"`
 	Type        string `json:"type"`
 	By          string `json:"by"`

@@ -26,11 +26,11 @@ func (c *Client) GetResource(url string) ([]byte, error) {
 	} else {
 		defer response.Body.Close()
 		contents, err := ioutil.ReadAll(response.Body)
+
 		if err != nil {
 			return nil, err
 		}
-		var jsonMap map[string]interface{}
-		err = json.Unmarshal(contents, &jsonMap)
+
 		return contents, err
 	}
 }
@@ -38,25 +38,26 @@ func (c *Client) GetResource(url string) ([]byte, error) {
 func (c *Client) GetItem(id int) (Item, error) {
 	url := fmt.Sprintf(c.ItemUrl, id)
 	rep, err := c.GetResource(url)
+
 	var i Item
 	if err != nil {
 		return i, err
 	}
-	err = json.Unmarshal(rep, &i)
 
+	err = json.Unmarshal(rep, &i)
 	return i, err
 }
 
 func (c *Client) GetUser(username string) (User, error) {
 	url := fmt.Sprintf(c.UserUrl, username)
 	rep, err := c.GetResource(url)
+
 	var user User
 	if err != nil {
 		return user, err
 	}
 
 	err = json.Unmarshal(rep, &user)
-
 	return user, err
 }
 
