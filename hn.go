@@ -35,20 +35,36 @@ func NewClient() *Client {
 	return &c
 }
 
+// Very Interesting. This function returns EOF on occasion - the below GetResource never does.
+// func (c *Client) OldGetResource(url string) ([]byte, error) {
+// 	response, err := http.Get(url)
+// 	if err != nil {
+// 		return nil, err
+// 	} else {
+// 		defer response.Body.Close()
+// 		contents, err := ioutil.ReadAll(response.Body)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+// 		return contents, err
+// 	}
+// }
+
 func (c *Client) GetResource(url string) ([]byte, error) {
-	response, err := http.Get(url)
+	httpClient := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	req.Close = true
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, err
-	} else {
-		defer response.Body.Close()
-		contents, err := ioutil.ReadAll(response.Body)
-
-		if err != nil {
-			return nil, err
-		}
-
-		return contents, err
 	}
+	defer resp.Body.Close()
+
+	response, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+	    return nil, err
+	}
+	return response, err
 }
 
 func (c *Client) GetItem(id int) (Item, error) {
