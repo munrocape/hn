@@ -106,7 +106,11 @@ func (c *Client) GetStory(id int) (Story, error) {
 	if item.Type != "story" {
 		return story, fmt.Errorf("Item with id %d is not a story", id)
 	}
-	story = Story{
+	return ItemToStory(item), nil
+}
+
+func (c *Client) ItemToStory(item Item) Story {
+	story := Story{
 		By:          item.By,
 		Descendants: item.Descendants,
 		Kids:        item.Kids,
@@ -115,7 +119,7 @@ func (c *Client) GetStory(id int) (Story, error) {
 		Title:       item.Title,
 		Url:         item.Url,
 	}
-	return story, nil
+	return story
 }
 
 // GetComment returns a Comment struct with the information of a comment corresponding to the provided id
@@ -128,7 +132,11 @@ func (c *Client) GetComment(id int) (Comment, error) {
 	if item.Type != "comment" {
 		return comment, fmt.Errorf("Item with id %d is not a comment", id)
 	}
-	comment = Comment{
+	return ItemToComment(item), nil
+}
+
+func (c *Client) ItemToComment(item Item) Comment {
+	comment := Comment{
 		By:     item.By,
 		Id:     item.Id,
 		Kids:   item.Kids,
@@ -136,7 +144,7 @@ func (c *Client) GetComment(id int) (Comment, error) {
 		Text:   item.Text,
 		Time:   item.Time,
 	}
-	return comment, nil
+	return comment
 }
 
 // GetPoll returns a Poll struct with the information of a poll corresponding to the provided id
@@ -149,7 +157,11 @@ func (c *Client) GetPoll(id int) (Poll, error) {
 	if item.Type != "poll" {
 		return poll, fmt.Errorf("Item with id %d is not a poll", id)
 	}
-	poll = Poll{
+	return ItemToPoll(item), nil
+}
+
+func (c *Client) ItemToPoll(item Item) Poll {
+	poll := Poll{
 		By:          item.By,
 		Descendants: item.Descendants,
 		Id:          item.Id,
@@ -159,7 +171,7 @@ func (c *Client) GetPoll(id int) (Poll, error) {
 		Time:        item.Time,
 		Title:       item.Title,
 	}
-	return poll, nil
+	return poll
 }
 
 // GetPoll returns a Poll struct with the information of a poll corresponding to the provided id
@@ -180,7 +192,19 @@ func (c *Client) GetPollOpt(id int) (PollOpt, error) {
 		Text:   item.Text,
 		Time:   item.Time,
 	}
-	return pollopt, nil
+	return ItemToPollOpt(item), nil
+}
+
+func (c *Client) ItemToPollOpt(item Item) PollOpt{
+	pollopt := PollOpt{
+		By:     item.By,
+		Id:     item.Id,
+		Parent: item.Parent,
+		Score:  item.Score,
+		Text:   item.Text,
+		Time:   item.Time,
+	}
+	return pollopt
 }
 
 // GetTopStories takes an int number and returns an array of up to number ints that represent the current top stories.
