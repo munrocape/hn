@@ -1,4 +1,4 @@
-package main
+package client
 
 type Changes struct {
 	Items    []int    `json:"items"`

@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"encoding/json"
@@ -326,50 +326,4 @@ func (c *Client) GetMaxId() (int, error) {
 	rep, err := c.GetResource(url)
 	err = json.Unmarshal(rep, &max)
 	return max, err
-}
-
-func main() {
-	c := NewClient()
-
-	story, _ := c.GetItem(8715529)
-	fmt.Printf("%+v\n\n", story)
-
-	user, _ := c.GetUser("munrocape")
-	fmt.Printf("%+v\n\n", user)
-
-	comment, _ := c.GetItem(8715677)
-	fmt.Printf("%+v\n\n", comment)
-
-	top10, _ := c.GetTopStories(10)
-	fmt.Printf("%+v\n\n", top10)
-
-	new10, _ := c.GetNewStories(10)
-	fmt.Printf("%+v\n\n", new10)
-
-	ask10, _ := c.GetRecentAskStories(10)
-	fmt.Printf("%+v\n\n", ask10)
-
-	job10, _ := c.GetRecentJobStories(10)
-	fmt.Printf("%+v\n\n", job10)
-
-	show10, _ := c.GetRecentShowStories(10)
-	fmt.Printf("%+v\n\n", show10)
-
-	changes, _ := c.GetRecentChanges()
-	fmt.Printf("%+v\n\n", changes)
-
-	max, _ := c.GetMaxId()
-	fmt.Printf("%+v\n\n", max)
-
-	commentStruct, _ := c.GetComment(88463)
-	fmt.Printf("%+v\n\n", commentStruct)
-
-	storyStruct, _ := c.GetStory(8863)
-	fmt.Printf("%+v\n\n", storyStruct)
-
-	pollStruct, _ := c.GetPoll(126809)
-	fmt.Printf("%+v\n\n", pollStruct)
-
-	polloptStruct, _ := c.GetPollOpt(160705)
-	fmt.Printf("%+v\n\n", polloptStruct)
 }

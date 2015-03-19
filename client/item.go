@@ -1,4 +1,4 @@
-package main
+package client
 
 type Item struct {
 	Id          int    `json:"id"`
