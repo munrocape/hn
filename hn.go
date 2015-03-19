@@ -106,7 +106,7 @@ func (c *Client) GetStory(id int) (Story, error) {
 	if item.Type != "story" {
 		return story, fmt.Errorf("Item with id %d is not a story", id)
 	}
-	return ItemToStory(item), nil
+	return c.ItemToStory(item), nil
 }
 
 func (c *Client) ItemToStory(item Item) Story {
@@ -132,7 +132,7 @@ func (c *Client) GetComment(id int) (Comment, error) {
 	if item.Type != "comment" {
 		return comment, fmt.Errorf("Item with id %d is not a comment", id)
 	}
-	return ItemToComment(item), nil
+	return c.ItemToComment(item), nil
 }
 
 func (c *Client) ItemToComment(item Item) Comment {
@@ -157,7 +157,7 @@ func (c *Client) GetPoll(id int) (Poll, error) {
 	if item.Type != "poll" {
 		return poll, fmt.Errorf("Item with id %d is not a poll", id)
 	}
-	return ItemToPoll(item), nil
+	return c.ItemToPoll(item), nil
 }
 
 func (c *Client) ItemToPoll(item Item) Poll {
@@ -192,10 +192,10 @@ func (c *Client) GetPollOpt(id int) (PollOpt, error) {
 		Text:   item.Text,
 		Time:   item.Time,
 	}
-	return ItemToPollOpt(item), nil
+	return c.ItemToPollOpt(item), nil
 }
 
-func (c *Client) ItemToPollOpt(item Item) PollOpt{
+func (c *Client) ItemToPollOpt(item Item) PollOpt {
 	pollopt := PollOpt{
 		By:     item.By,
 		Id:     item.Id,
