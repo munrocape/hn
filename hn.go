@@ -35,7 +35,7 @@ func NewClient() *Client {
 	return &c
 }
 
-// Very Interesting. This function returns EOF on occasion - the below GetResource never does.
+// Very Interesting. This function returns EOF on occasion (~1/10 times) - the below GetResource never does.
 // func (c *Client) OldGetResource(url string) ([]byte, error) {
 // 	response, err := http.Get(url)
 // 	if err != nil {
@@ -62,11 +62,12 @@ func (c *Client) GetResource(url string) ([]byte, error) {
 
 	response, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-	    return nil, err
+		return nil, err
 	}
 	return response, err
 }
 
+// GetItem returns an Item struct with the information corresponding to the item with the provided id
 func (c *Client) GetItem(id int) (Item, error) {
 	url := c.BaseUrl + fmt.Sprintf(c.ItemSuffix, id)
 	rep, err := c.GetResource(url)
@@ -80,6 +81,7 @@ func (c *Client) GetItem(id int) (Item, error) {
 	return i, err
 }
 
+// GetUser returns a User struct with the information of a user corresponding to the provided username
 func (c *Client) GetUser(username string) (User, error) {
 	url := c.BaseUrl + fmt.Sprintf(c.UserSuffix, username)
 	rep, err := c.GetResource(url)
@@ -91,6 +93,27 @@ func (c *Client) GetUser(username string) (User, error) {
 
 	err = json.Unmarshal(rep, &user)
 	return user, err
+}
+
+// GetComment returns a Comment struct with the information of a comment corresponding to the provided id
+func (c *Client) GetComment(id int) (Comment, error) {
+	item, err := c.GetItem(id)
+	var comment Comment
+	if err != nil {
+		return comment, err
+	}
+	if item.Type != "comment" {
+		return comment, fmt.Errorf("Item with id %d is not a comment", id)
+	}
+	comment = Comment{
+		By:     item.By,
+		Id:     item.Id,
+		Kids:   item.Kids,
+		Parent: item.Parent,
+		Text:   item.Text,
+		Time:   item.Time,
+	}
+	return comment, nil
 }
 
 // GetTopStories takes an int number and returns an array of up to number ints that represent the current top stories.
@@ -246,4 +269,7 @@ func main() {
 
 	max, _ := c.GetMaxId()
 	fmt.Printf("%+v\n\n", max)
+
+	commentStruct, _ := c.GetComment(88463)
+	fmt.Printf("%+v\n\n", commentStruct)
 }
