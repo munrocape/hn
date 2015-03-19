@@ -1,4 +1,4 @@
-package client
+package hnclient
 
 type PollOpt struct {
 	By     string `json:"by"`

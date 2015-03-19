@@ -1,4 +1,4 @@
-package client
+package hnclient
 
 type User struct {
 	Id        string `json:"id"`

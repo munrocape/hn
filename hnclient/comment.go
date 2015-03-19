@@ -1,4 +1,4 @@
-package client
+package hnclient
 
 type Comment struct {
 	By     string `json:"by"`

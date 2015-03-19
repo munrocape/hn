@@ -1,4 +1,4 @@
-package client
+package hnclient
 
 type Item struct {
 	Id          int    `json:"id"`
