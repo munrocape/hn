@@ -10,6 +10,30 @@ You can then include it in any go file.
 import "github.com/munrocape/hn/client"
 ```
 
+Below is a quick reference of methods. Everything is explained in detail following.
+```Go
+c := hn.NewClient() // initialize the client
+
+c.GetUser($username) // information regarding a user with that username
+
+c.GetStory($id) // story item with id $id
+c.GetComment($id) // comment with id $id
+
+c.GetPoll($id) // poll with id $id
+c.GetPollOpt($id) // Poll Opts are poll options - uuid $id
+
+c.GetRecentJobStories($count) // get 0 <= $count <= 200 number of recent job stories
+c.GetRecentAskStories($count)
+c.GetRecentShowStories($count)
+
+c.GetTopStories($count) // get 0 <= $count <= 500 top stories
+c.GetNewStories($count)
+
+c.GetMaxId() // id of the most recent item on HN
+c.GetRecentChanges() // recently updated profiles and items
+
+```
+
 
 ##API Specification and Code Examples
 The API specification can be found [here.](https://github.com/HackerNews/API)
