@@ -8,15 +8,15 @@ import (
 )
 
 type Client struct {
-	BaseUrl string
-	UserSuffix string
-	ItemSuffix string
-	MaxSuffix string
-	TopSuffix string
-	NewSuffix string
-	JobSuffix string
-	AskSuffix string
-	ShowSuffix string
+	BaseUrl      string
+	UserSuffix   string
+	ItemSuffix   string
+	MaxSuffix    string
+	TopSuffix    string
+	NewSuffix    string
+	JobSuffix    string
+	AskSuffix    string
+	ShowSuffix   string
 	UpdateSuffix string
 }
 
@@ -84,12 +84,12 @@ func (c *Client) GetTopStories(number int) ([]int, error) {
 	if number > 500 {
 		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
 	}
-	
+
 	url := c.BaseUrl + c.TopSuffix
 	rep, err := c.GetResource(url)
-	
+
 	err = json.Unmarshal(rep, &top500)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -104,12 +104,12 @@ func (c *Client) GetNewStories(number int) ([]int, error) {
 	if number > 500 {
 		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
 	}
-	
+
 	url := c.BaseUrl + c.NewSuffix
 	rep, err := c.GetResource(url)
 
 	err = json.Unmarshal(rep, &top500)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -124,12 +124,12 @@ func (c *Client) GetRecentAskStories(number int) ([]int, error) {
 	if number > 200 {
 		return top200, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
 	}
-	
+
 	url := c.BaseUrl + c.AskSuffix
 	rep, err := c.GetResource(url)
 
 	err = json.Unmarshal(rep, &top200)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -144,12 +144,12 @@ func (c *Client) GetRecentShowStories(number int) ([]int, error) {
 	if number > 200 {
 		return top200, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
 	}
-	
+
 	url := c.BaseUrl + c.ShowSuffix
 	rep, err := c.GetResource(url)
 
 	err = json.Unmarshal(rep, &top200)
-	
+
 	if err != nil {
 		return nil, err
 	}
@@ -164,17 +164,38 @@ func (c *Client) GetRecentJobStories(number int) ([]int, error) {
 	if number > 200 {
 		return top200, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
 	}
-	
+
 	url := c.BaseUrl + c.JobSuffix
 	rep, err := c.GetResource(url)
 
 	err = json.Unmarshal(rep, &top200)
-	
+
 	if err != nil {
 		return nil, err
 	}
 
 	return top200[:number], nil
+}
+
+// GetRecentChanges takes an int number and returns an array of up to number ints that represent the most recent Job stories
+// Constraints: 0 <= number <= 200
+func (c *Client) GetRecentChanges() (Changes, error) {
+	var changes Changes
+	url := c.BaseUrl + c.UpdateSuffix
+	rep, err := c.GetResource(url)
+
+	err = json.Unmarshal(rep, &changes)
+
+	return changes, err
+}
+
+// GetMaxId returns the maximum id represented by an int
+func (c *Client) GetMaxId() (int, error) {
+	var max int
+	url := c.BaseUrl + c.MaxSuffix
+	rep, err := c.GetResource(url)
+	err = json.Unmarshal(rep, &max)
+	return max, err
 }
 
 func main() {
@@ -203,4 +224,10 @@ func main() {
 
 	show10, _ := c.GetRecentShowStories(10)
 	fmt.Printf("%+v\n\n", show10)
+
+	changes, _ := c.GetRecentChanges()
+	fmt.Printf("%+v\n\n", changes)
+
+	max, _ := c.GetMaxId()
+	fmt.Printf("%+v\n\n", max)
 }
