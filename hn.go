@@ -35,7 +35,7 @@ func NewClient() *Client {
 	return &c
 }
 
-// Very Interesting. This function returns EOF on occasion (~1/10 times) - the below GetResource never does.
+// Interesting. This function returns EOF on occasion (~1/10 times) - the below GetResource never does.
 // func (c *Client) OldGetResource(url string) ([]byte, error) {
 // 	response, err := http.Get(url)
 // 	if err != nil {
@@ -93,6 +93,28 @@ func (c *Client) GetUser(username string) (User, error) {
 
 	err = json.Unmarshal(rep, &user)
 	return user, err
+}
+
+// GetStory returns a Story struct with the information of a story corresponding to the provided id
+func (c *Client) GetStory(id int) (Story, error) {
+	item, err := c.GetItem(id)
+	var story Story
+	if err != nil {
+		return story, err
+	}
+	if item.Type != "story" {
+		return story, fmt.Errorf("Item with id %d is not a story", id)
+	}
+	story = Story{
+		By:     item.By,
+		Descendants:     item.Descendants,
+		Kids:   item.Kids,
+		Score: item.Score,
+		Time:   item.Time,
+		Title:   item.Title,
+		Url:   item.Url,
+	}
+	return story, nil
 }
 
 // GetComment returns a Comment struct with the information of a comment corresponding to the provided id
@@ -272,4 +294,7 @@ func main() {
 
 	commentStruct, _ := c.GetComment(88463)
 	fmt.Printf("%+v\n\n", commentStruct)
+
+	storyStruct, _ := c.GetStory(8863)
+	fmt.Printf("%+v\n\n", storyStruct)
 }
