@@ -45,6 +45,11 @@ type User struct {
 }
 ```
 
+To get the information on a specific user:
+```Go
+user, err := client.GetUser("munrocape")
+```
+
 ###Items
 Items, on the other hand, may be slightly more vague. In fact, an Item represents a superset of attributes as follows:
 ```Go
@@ -65,6 +70,8 @@ type Item struct {
 	Descendants int    `json:"descendants"` // Total comment count
 }
 ```
+
+For each respective Item and Item type, use the corresponding `client.Get{ItemType}(id)` method.
 
 Items represent all the attributes that can make up a story, comment, poll, or poll option on HN. The "Type" field corresponds to one of those four objects. They are outlined below.
 
@@ -115,4 +122,25 @@ type PollOpt struct {
 	Text   string `json:"text"`
 	Time   int    `json:"time"`
 }
+```
+
+###Top and Recent Stories
+There also are a number of methods corresponding to story types.
+```Go
+top, _ := client.GetTopStories(50) // you can request between 1 and 500 top stories
+new, _ := client.GetNewStories(200) // you can request between 1 and 500 of the newest stories
+job, _ := client.GetRecentJobStories(42) // you can request between 1 and 200 recent job stories
+ask, _ := client.GetRecentAskStories(42) // you can request between 1 and 200 recent ask stories
+show, _ := client.GetRecentShowStories(42) // you can request between 1 and 200 recent show stories
+```
+
+You can also query for recent changes to profiles and items. You will receive a struct corresponding to the two arrays - a Changes struct.
+```Go
+type Changes struct {
+	Items    []int    `json:"items"`
+	Profiles []string `json:"profiles"`
+}
+```
+```Go
+changes, _ := client.GetChanges()
 ```
