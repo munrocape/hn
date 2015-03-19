@@ -36,6 +36,7 @@ func NewClient() *Client {
 }
 
 // Interesting. This function returns EOF on occasion (~1/10 times) - the below GetResource never does.
+// Cursory exploration leads me to believe that the `req.Close = true` line is the differentiating factor
 // func (c *Client) OldGetResource(url string) ([]byte, error) {
 // 	response, err := http.Get(url)
 // 	if err != nil {
@@ -106,13 +107,13 @@ func (c *Client) GetStory(id int) (Story, error) {
 		return story, fmt.Errorf("Item with id %d is not a story", id)
 	}
 	story = Story{
-		By:     item.By,
-		Descendants:     item.Descendants,
-		Kids:   item.Kids,
-		Score: item.Score,
-		Time:   item.Time,
-		Title:   item.Title,
-		Url:   item.Url,
+		By:          item.By,
+		Descendants: item.Descendants,
+		Kids:        item.Kids,
+		Score:       item.Score,
+		Time:        item.Time,
+		Title:       item.Title,
+		Url:         item.Url,
 	}
 	return story, nil
 }
@@ -136,6 +137,50 @@ func (c *Client) GetComment(id int) (Comment, error) {
 		Time:   item.Time,
 	}
 	return comment, nil
+}
+
+// GetPoll returns a Poll struct with the information of a poll corresponding to the provided id
+func (c *Client) GetPoll(id int) (Poll, error) {
+	item, err := c.GetItem(id)
+	var poll Poll
+	if err != nil {
+		return poll, err
+	}
+	if item.Type != "poll" {
+		return poll, fmt.Errorf("Item with id %d is not a poll", id)
+	}
+	poll = Poll{
+		By:          item.By,
+		Descendants: item.Descendants,
+		Id:          item.Id,
+		Kids:        item.Kids,
+		Parts:       item.Parts,
+		Text:        item.Text,
+		Time:        item.Time,
+		Title:       item.Title,
+	}
+	return poll, nil
+}
+
+// GetPoll returns a Poll struct with the information of a poll corresponding to the provided id
+func (c *Client) GetPollOpt(id int) (PollOpt, error) {
+	item, err := c.GetItem(id)
+	var pollopt PollOpt
+	if err != nil {
+		return pollopt, err
+	}
+	if item.Type != "pollopt" {
+		return pollopt, fmt.Errorf("Item with id %d is not a pollopt", id)
+	}
+	pollopt = PollOpt{
+		By:     item.By,
+		Id:     item.Id,
+		Parent: item.Parent,
+		Score:  item.Score,
+		Text:   item.Text,
+		Time:   item.Time,
+	}
+	return pollopt, nil
 }
 
 // GetTopStories takes an int number and returns an array of up to number ints that represent the current top stories.
@@ -297,4 +342,10 @@ func main() {
 
 	storyStruct, _ := c.GetStory(8863)
 	fmt.Printf("%+v\n\n", storyStruct)
+
+	pollStruct, _ := c.GetPoll(126809)
+	fmt.Printf("%+v\n\n", pollStruct)
+
+	polloptStruct, _ := c.GetPollOpt(160705)
+	fmt.Printf("%+v\n\n", polloptStruct)
 }
