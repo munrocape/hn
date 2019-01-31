@@ -14,6 +14,7 @@ type Client struct {
 	MaxSuffix    string
 	TopSuffix    string
 	NewSuffix    string
+	BestSuffix   string
 	JobSuffix    string
 	AskSuffix    string
 	ShowSuffix   string
@@ -28,6 +29,7 @@ func NewClient() *Client {
 	c.MaxSuffix = "maxitem.json"
 	c.TopSuffix = "topstories.json"
 	c.NewSuffix = "newstories.json"
+	c.BestSuffix = "beststories.json"
 	c.JobSuffix = "jobstories.json"
 	c.AskSuffix = "askstories.json"
 	c.ShowSuffix = "showstories.json"
@@ -230,6 +232,26 @@ func (c *Client) GetTopStories(number int) ([]int, error) {
 // GetNewStories takes an int number and returns an array of up to number ints that represent the newest stories.
 // Constraints: 0 <= number <= 500
 func (c *Client) GetNewStories(number int) ([]int, error) {
+	var top500 []int
+	if number > 500 {
+		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
+	}
+
+	url := c.BaseUrl + c.NewSuffix
+	rep, err := c.GetResource(url)
+
+	err = json.Unmarshal(rep, &top500)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return top500[:number], nil
+}
+
+// GetBestStories takes an int number and returns an array of up to number ints that represent the best stories.
+// Constraints: 0 <= number <= 500
+func (c *Client) GetBestStories(number int) ([]int, error) {
 	var top500 []int
 	if number > 500 {
 		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)

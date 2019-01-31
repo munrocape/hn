@@ -1,17 +1,20 @@
-#A Golang Hacker News API Client
+# A Golang Hacker News API Client
 
 This is a wrapper client for the Hacker News API. It implements the most recent version, v0. It supports all resource requests.
 
-##Usage
+## Usage
+
 From a command line, run `$ go fetch github.com/munrocape/hn/client`
 
 You can then include it in any go file.
-```Go
+
+```go
 import "github.com/munrocape/hn/client"
 ```
 
 Below is a quick reference of methods. Everything is explained in detail following.
-```Go
+
+```go
 c := hn.NewClient() // initialize the client
 
 c.GetUser($username) // information regarding a user with that username
@@ -28,18 +31,19 @@ c.GetRecentShowStories($count)
 
 c.GetTopStories($count) // get 0 <= $count <= 500 top stories
 c.GetNewStories($count)
+c.GetBestStories($count)
 
 c.GetMaxId() // id of the most recent item on HN
 c.GetRecentChanges() // recently updated profiles and items
-
 ```
 
+## API Specification and Code Examples
 
-##API Specification and Code Examples
 The API specification can be found [here.](https://github.com/HackerNews/API)
-The below code examples are meant to demonstrate how to fetch resources as well as interact with them. 
 
-```Go
+The below code examples are meant to demonstrate how to fetch resources as well as interact with them.
+
+```go
 package main
 import ("fmt"
         hn "github.com/munrocape/hn/client"
@@ -53,12 +57,15 @@ func main() {
 }
 ```
 
-##Structs
+## Structs
+
 In the HNverse of resources, there are Items and Users.
 
-###Users
+### Users
+
 Users, as you may have guessed, represent user accounts.
-```Go
+
+```go
 type User struct {
 	Id        string `json:"id"`
 	Delay     int    `json:"delay"`
@@ -70,13 +77,16 @@ type User struct {
 ```
 
 To get the information on a specific user:
-```Go
+
+```go
 user, err := client.GetUser("munrocape")
 ```
 
-###Items
+### Items
+
 Items, on the other hand, may be slightly more vague. In fact, an Item represents a superset of attributes as follows:
-```Go
+
+```go
 type Item struct {
 	Id          int    `json:"id"` // A UUID. if x > y then x was created after y.
 	Deleted     bool   `json:"deleted"` // Whether or not the item was deleted
@@ -99,7 +109,7 @@ For each respective Item and Item type, use the corresponding `client.Get{ItemTy
 
 Items represent all the attributes that can make up a story, comment, poll, or poll option on HN. The "Type" field corresponds to one of those four objects. They are outlined below.
 
-```Go
+```go
 type Story struct {
 	By          string `json:"by"`
 	Descendants int    `json:"descendants"`
@@ -112,7 +122,7 @@ type Story struct {
 }
 ```
 
-```Go
+```go
 type Comment struct {
 	By     string `json:"by"`
 	Id     int    `json:"id"`
@@ -123,7 +133,7 @@ type Comment struct {
 }
 ```
 
-```Go
+```go
 type Poll struct {
 	By          string `json:"by"`
 	Descendants int    `json:"descendants"`
@@ -137,7 +147,7 @@ type Poll struct {
 }
 ```
 
-```Go
+```go
 type PollOpt struct {
 	By     string `json:"by"`
 	Id     int    `json:"id"`
@@ -148,23 +158,28 @@ type PollOpt struct {
 }
 ```
 
-###Top and Recent Stories
+### Top and Recent Stories
+
 There also are a number of methods corresponding to story types.
-```Go
+
+```go
 top, _ := client.GetTopStories(50) // you can request between 1 and 500 top stories
 new, _ := client.GetNewStories(200) // you can request between 1 and 500 of the newest stories
+best, _ := client.GetBestStories(10) // you can request between 1 and 500 of the newest stories
 job, _ := client.GetRecentJobStories(42) // you can request between 1 and 200 recent job stories
 ask, _ := client.GetRecentAskStories(42) // you can request between 1 and 200 recent ask stories
 show, _ := client.GetRecentShowStories(42) // you can request between 1 and 200 recent show stories
 ```
 
 You can also query for recent changes to profiles and items. You will receive a struct corresponding to the two arrays - a Changes struct.
-```Go
+
+```go
 type Changes struct {
 	Items    []int    `json:"items"`
 	Profiles []string `json:"profiles"`
 }
 ```
-```Go
+
+```go
 changes, _ := client.GetChanges()
 ```
