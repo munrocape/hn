@@ -13,6 +13,7 @@ type Client struct {
 	ItemSuffix   string
 	MaxSuffix    string
 	TopSuffix    string
+	BestSuffix   string
 	NewSuffix    string
 	JobSuffix    string
 	AskSuffix    string
@@ -27,6 +28,7 @@ func NewClient() *Client {
 	c.ItemSuffix = "item/%d.json"
 	c.MaxSuffix = "maxitem.json"
 	c.TopSuffix = "topstories.json"
+	c.BestSuffix = "beststories.json"
 	c.NewSuffix = "newstories.json"
 	c.JobSuffix = "jobstories.json"
 	c.AskSuffix = "askstories.json"
@@ -205,6 +207,26 @@ func (c *Client) ItemToPollOpt(item Item) PollOpt {
 		Time:   item.Time,
 	}
 	return pollopt
+}
+
+// GetTopStories takes an int number and returns an array of up to number ints that represent the current top stories.
+// Constraints: 0 <= number <= 500
+func (c *Client) GetBestStories(number int) ([]int, error) {
+	var top500 []int
+	if number > 500 {
+		return top500, fmt.Errorf("Number %d greater than maximum 500 items allowed", number)
+	}
+
+	url := c.BaseUrl + c.BestSuffix
+	rep, err := c.GetResource(url)
+
+	err = json.Unmarshal(rep, &top500)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return top500[:number], nil
 }
 
 // GetTopStories takes an int number and returns an array of up to number ints that represent the current top stories.
